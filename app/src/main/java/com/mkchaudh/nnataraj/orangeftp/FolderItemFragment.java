@@ -1,17 +1,24 @@
 package com.mkchaudh.nnataraj.orangeftp;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.mkchaudh.nnataraj.orangeftp.dummy.DummyContent;
-import com.mkchaudh.nnataraj.orangeftp.dummy.DummyContent.DummyItem;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,6 +61,66 @@ public class FolderItemFragment extends Fragment {
         }
     }
 
+    class FetchFTPFileList extends AsyncTask<FTPClient, Void, FTPFile[]> {
+
+        private final WeakReference<MyFolderItemRecyclerViewAdapter> folderItemRecyclerViewAdapterWeakReference;
+        private final WeakReference<String> hostnameReference, usernameReference, passwordReference;
+        private final WeakReference<Integer> portReference;
+        private final WeakReference<List<FTPFile>> fileListReference;
+
+        FetchFTPFileList(final String hostname, final Integer port, final String username, final String password, final List<FTPFile> fileList, final MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter) {
+            hostnameReference = new WeakReference<>(hostname);
+            portReference = new WeakReference<>(port);
+            usernameReference = new WeakReference<>(username);
+            passwordReference = new WeakReference<>(password);
+            fileListReference = new WeakReference<>(fileList);
+            folderItemRecyclerViewAdapterWeakReference = new WeakReference<>(folderItemRecyclerViewAdapter);
+        }
+
+        @Override
+        protected FTPFile[] doInBackground(FTPClient... ftpClients) {
+            try {
+                if (!ftpClients[0].isConnected()) {
+                    final String hostname = hostnameReference.get(), username = usernameReference.get(), password = passwordReference.get();
+                    final Integer port = portReference.get();
+
+                    if (hostname == null
+                            || username == null
+                            || password == null
+                            || port == null)
+                        return null;
+
+
+                    ftpClients[0].connect(hostname, port);
+                    ftpClients[0].login(username, password);
+                }
+                ftpClients[0].enterLocalPassiveMode();
+                return ftpClients[0].listFiles();
+            } catch (IOException ae) {
+                StringWriter stackTrace = new StringWriter();
+                ae.printStackTrace(new PrintWriter(stackTrace));
+                Log.e("FetchFTPFileList", stackTrace.toString());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(FTPFile[] ftpFiles) {
+            if (ftpFiles != null) {
+                final List<FTPFile> fileList = fileListReference.get();
+                final MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = folderItemRecyclerViewAdapterWeakReference.get();
+
+                if (fileList != null && folderItemRecyclerViewAdapter != null) {
+                    fileList.clear();
+                    for (FTPFile ftpFile : ftpFiles) {
+                        fileList.add(ftpFile);
+                    }
+                    folderItemRecyclerViewAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,7 +135,11 @@ public class FolderItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyFolderItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            List<FTPFile> items = new ArrayList<>();
+            MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = new MyFolderItemRecyclerViewAdapter(items, mListener);
+            recyclerView.setAdapter(folderItemRecyclerViewAdapter);
+            new FetchFTPFileList("192.168.1.1", 21, "xxxxxx", "xxxxxxx", items, folderItemRecyclerViewAdapter)
+                    .execute(new FTPClient());
         }
         return view;
     }
@@ -103,6 +174,6 @@ public class FolderItemFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(FTPFile item);
     }
 }

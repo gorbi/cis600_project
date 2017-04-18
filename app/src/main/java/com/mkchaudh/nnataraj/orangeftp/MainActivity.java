@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.mkchaudh.nnataraj.orangeftp.dummy.DummyContent;
+import org.apache.commons.net.ftp.FTPFile;
 
 public class MainActivity extends AppCompatActivity implements FolderItemFragment.OnListFragmentInteractionListener {
 
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(FTPFile item) {
 
     }
 }

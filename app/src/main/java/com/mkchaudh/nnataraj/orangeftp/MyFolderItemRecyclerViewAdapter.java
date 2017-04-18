@@ -7,21 +7,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mkchaudh.nnataraj.orangeftp.FolderItemFragment.OnListFragmentInteractionListener;
-import com.mkchaudh.nnataraj.orangeftp.dummy.DummyContent.DummyItem;
+import org.apache.commons.net.ftp.FTPFile;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link FTPFile} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFolderItemRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<FTPFile> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyFolderItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyFolderItemRecyclerViewAdapter(List<FTPFile> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -36,8 +36,8 @@ public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(mValues.get(position).getName());
+        holder.mContentView.setText(mValues.get(position).getUser());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFold
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public FTPFile mItem;
 
         public ViewHolder(View view) {
             super(view);
