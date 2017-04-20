@@ -8,7 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.google.firebase.database.*;
 import org.apache.commons.net.ftp.FTPFile;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements FolderItemFragment.OnListFragmentInteractionListener {
 
@@ -28,9 +31,43 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             }
         });
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, FolderItemFragment.newInstance(1))
-                .commit();
+        /*Map<String, Map> ftpclients = new HashMap<>();
+
+        Map<String,String> ftpclient = new HashMap<>();
+        ftpclient.put("servernickname","myserverroomies");
+        ftpclient.put("hostname","192.168.1.1");
+        ftpclient.put("port","21");
+        ftpclient.put("username","xxxxxxx");
+        ftpclient.put("password","xxxxxxx");
+        ftpclients.put("myserverroomies",ftpclient);
+        ftpclient = new HashMap<>();
+        ftpclient.put("servernickname","myserverorangeftp");
+        ftpclient.put("hostname","192.168.1.1");
+        ftpclient.put("port","21");
+        ftpclient.put("username","xxxxxxx");
+        ftpclient.put("password","xxxxxxx");
+        ftpclients.put("myserverorangeftp",ftpclient);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference("ftpclients").setValue(ftpclients); */
+
+        DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
+        ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails,"/"))
+                        .commit();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     @Override
