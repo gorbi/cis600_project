@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mkchaudh.nnataraj.orangeftp.FolderItemFragment.OnListFragmentInteractionListener;
+import com.mkchaudh.nnataraj.orangeftp.data.Utilities;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFold
         if (mValues.get(position).isDirectory())
             holder.mIconView.setImageResource(R.mipmap.folder);
         holder.mNameView.setText(mValues.get(position).getName());
-        holder.mSizeView.setText(mValues.get(position).getSize() + " bytes");
+        holder.mSizeView.setText(Utilities.getReadableSize(mValues.get(position).getSize()));
         holder.mTimestampView.setText(mValues.get(position).getTimestamp().getTime().toString());
         holder.mOwnerView.setText("Owner: " + mValues.get(position).getUser());
 
