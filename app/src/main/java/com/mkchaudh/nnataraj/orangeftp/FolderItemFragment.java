@@ -1,6 +1,7 @@
 package com.mkchaudh.nnataraj.orangeftp;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -120,6 +121,19 @@ public class FolderItemFragment extends Fragment {
         }
     }
 
+    private class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            if (parent.getChildAdapterPosition(view) == 0) {
+                outRect.top = 10;
+            }
+            outRect.bottom = 10;
+            outRect.left = 10;
+            outRect.right = 10;
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -133,6 +147,7 @@ public class FolderItemFragment extends Fragment {
             List<FTPFile> items = new ArrayList<>();
             MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = new MyFolderItemRecyclerViewAdapter(items, mListener);
             recyclerView.setAdapter(folderItemRecyclerViewAdapter);
+            recyclerView.addItemDecoration(new VerticalSpaceItemDecoration());
             new FetchFTPFileList(mFtpServerDetails, items, folderItemRecyclerViewAdapter)
                     .execute(FTPClientCacher.getFTPClient(mFtpServerDetails.get("servernickname")));
         }

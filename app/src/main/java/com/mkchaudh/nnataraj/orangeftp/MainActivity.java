@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails,"/"))
+                        .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails,"/usbshare2-2"))
                         .commit();
             }
 
