@@ -3,6 +3,7 @@ package com.mkchaudh.nnataraj.orangeftp;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -14,6 +15,9 @@ import org.apache.commons.net.ftp.FTPFile;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements FolderItemFragment.OnListFragmentInteractionListener {
+
+    private static final String ARG_CONTENT = "content";
+    private Fragment mContent = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,23 +55,33 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         database.getReference("ftpclients").setValue(ftpclients); */
 
-        DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
-        ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails, "/"))
-                        .commit();
-            }
+        if (savedInstanceState != null) {
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, ARG_CONTENT);
+        } else {
+            DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
+            ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment, mContent = FolderItemFragment.newInstance(ftpServerDetails, "/"))
+                            .commit();
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
 
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, ARG_CONTENT, mContent);
     }
 
     @Override
@@ -102,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails, newCurrentDirectory))
+                            .replace(R.id.fragment, mContent = FolderItemFragment.newInstance(ftpServerDetails, newCurrentDirectory))
                             .addToBackStack("store")
                             .commit();
                 }
