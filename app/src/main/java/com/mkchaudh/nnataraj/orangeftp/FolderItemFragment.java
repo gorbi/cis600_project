@@ -114,7 +114,7 @@ public class FolderItemFragment extends Fragment {
 
                 if (fileList != null && folderItemRecyclerViewAdapter != null) {
                     fileList.clear();
-                    Collections.addAll(fileList,ftpFiles);
+                    Collections.addAll(fileList, ftpFiles);
                     folderItemRecyclerViewAdapter.notifyDataSetChanged();
                 }
             }
@@ -145,7 +145,7 @@ public class FolderItemFragment extends Fragment {
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             List<FTPFile> items = new ArrayList<>();
-            MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = new MyFolderItemRecyclerViewAdapter(items, mListener);
+            MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = new MyFolderItemRecyclerViewAdapter(items, mCurrentDirectory, mListener);
             recyclerView.setAdapter(folderItemRecyclerViewAdapter);
             recyclerView.addItemDecoration(new VerticalSpaceItemDecoration());
             new FetchFTPFileList(mFtpServerDetails, items, folderItemRecyclerViewAdapter)
@@ -183,7 +183,6 @@ public class FolderItemFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(FTPFile item);
+        void onListFragmentInteraction(FTPFile item, String currentDirectory);
     }
 }

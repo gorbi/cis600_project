@@ -21,9 +21,11 @@ public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFold
 
     private final List<FTPFile> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private final String mCurrentDirectory;
 
-    public MyFolderItemRecyclerViewAdapter(List<FTPFile> items, OnListFragmentInteractionListener listener) {
+    public MyFolderItemRecyclerViewAdapter(List<FTPFile> items, String currentDirectory, OnListFragmentInteractionListener listener) {
         mValues = items;
+        mCurrentDirectory = currentDirectory;
         mListener = listener;
     }
 
@@ -40,9 +42,9 @@ public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFold
         if (mValues.get(position).isDirectory())
             holder.mIconView.setImageResource(R.mipmap.folder);
         holder.mNameView.setText(mValues.get(position).getName());
-        holder.mSizeView.setText(mValues.get(position).getSize()+" bytes");
+        holder.mSizeView.setText(mValues.get(position).getSize() + " bytes");
         holder.mTimestampView.setText(mValues.get(position).getTimestamp().getTime().toString());
-        holder.mOwnerView.setText("Owner: "+mValues.get(position).getUser());
+        holder.mOwnerView.setText("Owner: " + mValues.get(position).getUser());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +52,7 @@ public class MyFolderItemRecyclerViewAdapter extends RecyclerView.Adapter<MyFold
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(holder.mItem, mCurrentDirectory);
                 }
             }
         });

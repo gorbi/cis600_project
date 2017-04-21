@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails,"/usbshare2-2"))
+                        .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails, "/"))
                         .commit();
             }
 
@@ -93,7 +93,25 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     }
 
     @Override
-    public void onListFragmentInteraction(FTPFile item) {
+    public void onListFragmentInteraction(FTPFile item, String currentDirectory) {
+        if (item.isDirectory()) {
+            final String newCurrentDirectory = currentDirectory + "/" + item.getName();
+            DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
+            ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment, FolderItemFragment.newInstance(ftpServerDetails, newCurrentDirectory))
+                            .addToBackStack("store")
+                            .commit();
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 }
