@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     @Override
     public void onListFragmentInteraction(FTPFile item, String currentDirectory) {
         if (item.isDirectory()) {
+            //Edge condition will add double forward slashes
+            if (currentDirectory.length()==1) currentDirectory = "";
+
             final String newCurrentDirectory = currentDirectory + "/" + item.getName();
             DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
             ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {

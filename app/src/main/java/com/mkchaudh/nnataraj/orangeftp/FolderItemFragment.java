@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPClientCacher;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -76,10 +77,11 @@ public class FolderItemFragment extends Fragment {
         @Override
         protected FTPFile[] doInBackground(FTPClient... ftpClients) {
             try {
-
                 String servernickname = null;
 
-                if (!ftpClients[0].isConnected()) {
+                try {
+                    ftpClients[0].changeWorkingDirectory(mCurrentDirectory);
+                } catch (Exception ae) {
                     final HashMap<String, String> ftpServerDetails = ftpServerDetailsReference.get();
 
                     if (ftpServerDetails == null)
@@ -89,13 +91,13 @@ public class FolderItemFragment extends Fragment {
 
                     ftpClients[0].connect(ftpServerDetails.get("hostname"), Integer.parseInt(ftpServerDetails.get("port")));
                     ftpClients[0].login(ftpServerDetails.get("username"), ftpServerDetails.get("password"));
+                    ftpClients[0].enterLocalPassiveMode();
                 }
-                ftpClients[0].enterLocalPassiveMode();
 
-                if (servernickname != null)
+                if (servernickname != null) {
+                    ftpClients[0].changeWorkingDirectory(mCurrentDirectory);
                     FTPClientCacher.updateFTPClient(servernickname, ftpClients[0]);
-
-                ftpClients[0].changeWorkingDirectory(mCurrentDirectory);
+                }
 
                 return ftpClients[0].listFiles();
             } catch (IOException ae) {
@@ -139,18 +141,18 @@ public class FolderItemFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_folderitem_list, container, false);
 
+        ((TextView) view.findViewById(R.id.path)).setText(mCurrentDirectory);
+
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            List<FTPFile> items = new ArrayList<>();
-            MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = new MyFolderItemRecyclerViewAdapter(items, mCurrentDirectory, mListener);
-            recyclerView.setAdapter(folderItemRecyclerViewAdapter);
-            recyclerView.addItemDecoration(new VerticalSpaceItemDecoration());
-            new FetchFTPFileList(mFtpServerDetails, items, folderItemRecyclerViewAdapter)
-                    .execute(FTPClientCacher.getFTPClient(mFtpServerDetails.get("servernickname")));
-        }
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        List<FTPFile> items = new ArrayList<>();
+        MyFolderItemRecyclerViewAdapter folderItemRecyclerViewAdapter = new MyFolderItemRecyclerViewAdapter(items, mCurrentDirectory, mListener);
+        recyclerView.setAdapter(folderItemRecyclerViewAdapter);
+        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration());
+        new FetchFTPFileList(mFtpServerDetails, items, folderItemRecyclerViewAdapter)
+                .execute(FTPClientCacher.getFTPClient(mFtpServerDetails.get("servernickname")));
+
         return view;
     }
 
