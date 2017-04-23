@@ -81,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        getSupportFragmentManager().putFragment(outState, ARG_CONTENT, mContent);
+        if (mContent != null)
+            getSupportFragmentManager().putFragment(outState, ARG_CONTENT, mContent);
     }
 
     @Override
