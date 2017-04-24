@@ -3,7 +3,7 @@
           package="com.mkchaudh.nnataraj.orangeftp">
 
     <!-- To access FTP Servers & Firebase APIs: -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
             android:allowBackup="true"
@@ -20,6 +20,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+                android:name=".SplashActivity"
+                android:label="@string/app_name"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

@@ -1,5 +1,6 @@
 package com.mkchaudh.nnataraj.orangeftp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.google.firebase.database.*;
+import com.mkchaudh.nnataraj.orangeftp.data.FirebaseHelper;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.util.HashMap;
@@ -35,44 +36,25 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             }
         });
 
-        /*Map<String, Map> ftpclients = new HashMap<>();
-
-        Map<String,String> ftpclient = new HashMap<>();
-        ftpclient.put("servernickname","myserverroomies");
-        ftpclient.put("hostname","192.168.1.1");
-        ftpclient.put("port","21");
-        ftpclient.put("username","xxxxxxx");
-        ftpclient.put("password","xxxxxxx");
-        ftpclients.put("myserverroomies",ftpclient);
-        ftpclient = new HashMap<>();
-        ftpclient.put("servernickname","myserverorangeftp");
-        ftpclient.put("hostname","192.168.1.1");
-        ftpclient.put("port","21");
-        ftpclient.put("username","xxxxxxx");
-        ftpclient.put("password","xxxxxxx");
-        ftpclients.put("myserverorangeftp",ftpclient);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.getReference("ftpclients").setValue(ftpclients); */
-
         if (savedInstanceState != null) {
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, ARG_CONTENT);
         } else {
-            DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
-            ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment, mContent = FolderItemFragment.newInstance(ftpServerDetails, "/"))
-                            .commit();
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+            FirebaseHelper.set("default-user");
+            startActivity(new Intent(this, SplashActivity.class));
 
-                }
-            });
+            HashMap<String, String> ftpclient = new HashMap<>();
+            ftpclient.put("servernickname", "myserverorangeftp");
+            ftpclient.put("hostname", "192.168.1.1");
+            ftpclient.put("port", "21");
+            ftpclient.put("username", "orangeftp");
+            ftpclient.put("password", "cis600android");
+            FirebaseHelper.updateFTPClient("myserverorangeftp", ftpclient);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, mContent = FolderItemFragment
+                            .newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), "/"))
+                    .commit();
         }
 
     }
@@ -111,25 +93,16 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     public void onListFragmentInteraction(FTPFile item, String currentDirectory) {
         if (item.isDirectory()) {
             //Edge condition will add double forward slashes
-            if (currentDirectory.length()==1) currentDirectory = "";
+            if (currentDirectory.length() == 1) currentDirectory = "";
 
-            final String newCurrentDirectory = currentDirectory + "/" + item.getName();
-            DatabaseReference ftpServerDetails = FirebaseDatabase.getInstance().getReference("ftpclients").child("myserverorangeftp");
-            ftpServerDetails.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    final HashMap<String, String> ftpServerDetails = (HashMap<String, String>) dataSnapshot.getValue();
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment, mContent = FolderItemFragment.newInstance(ftpServerDetails, newCurrentDirectory))
-                            .addToBackStack("store")
-                            .commit();
-                }
+            currentDirectory += "/" + item.getName();
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, mContent = FolderItemFragment
+                            .newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), currentDirectory))
+                    .addToBackStack("store")
+                    .commit();
 
-                }
-            });
         }
     }
 }

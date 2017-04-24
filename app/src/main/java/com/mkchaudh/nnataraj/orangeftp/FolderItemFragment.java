@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.mkchaudh.nnataraj.orangeftp.data.FTPClientCacher;
+import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -96,7 +96,7 @@ public class FolderItemFragment extends Fragment {
 
                 if (servernickname != null) {
                     ftpClients[0].changeWorkingDirectory(mCurrentDirectory);
-                    FTPClientCacher.updateFTPClient(servernickname, ftpClients[0]);
+                    FTPConnectionCacher.updateFTPConnection(servernickname, ftpClients[0]);
                 }
 
                 return ftpClients[0].listFiles();
@@ -151,7 +151,7 @@ public class FolderItemFragment extends Fragment {
         recyclerView.setAdapter(folderItemRecyclerViewAdapter);
         recyclerView.addItemDecoration(new VerticalSpaceItemDecoration());
         new FetchFTPFileList(mFtpServerDetails, items, folderItemRecyclerViewAdapter)
-                .execute(FTPClientCacher.getFTPClient(mFtpServerDetails.get("servernickname")));
+                .execute(FTPConnectionCacher.getFTPConnection(mFtpServerDetails.get("servernickname")));
 
         return view;
     }
