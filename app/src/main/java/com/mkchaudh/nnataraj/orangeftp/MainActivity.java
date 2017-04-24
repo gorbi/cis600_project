@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, ARG_CONTENT);
         } else {
 
-            FirebaseHelper.set("default-user");
             startActivity(new Intent(this, SplashActivity.class));
 
             HashMap<String, String> ftpclient = new HashMap<>();
