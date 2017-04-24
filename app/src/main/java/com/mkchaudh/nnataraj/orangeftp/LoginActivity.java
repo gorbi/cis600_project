@@ -17,6 +17,7 @@ import com.mkchaudh.nnataraj.orangeftp.data.FirebaseHelper;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String CREATE_ACCOUNT_ERROR = "Unable to create account";
+    private static final String SIGN_IN_ERROR = "Unable to sign in";
 
     private void proceed() {
         FirebaseHelper.set(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -42,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                 String email = ((TextView) findViewById(R.id.editTextEmail)).getText().toString();
                 String password = ((TextView) findViewById(R.id.editTextPassword)).getText().toString();
 
-                if (email == null || password == null)
+                if (email == null || password == null || email == "" || password == "")
                     return;
 
 
@@ -52,9 +53,29 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful())
                             proceed();
                         else
-                            Snackbar.make(v, CREATE_ACCOUNT_ERROR, Snackbar.LENGTH_LONG);
+                            Snackbar.make(v, CREATE_ACCOUNT_ERROR, Snackbar.LENGTH_LONG).show();
                     }
                 });
+            }
+        });
+
+        findViewById(R.id.signIn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+
+                String email = ((TextView) findViewById(R.id.editTextEmail)).getText().toString();
+                String password = ((TextView) findViewById(R.id.editTextPassword)).getText().toString();
+
+                if (email != null && !(email == "") && password != null && !(password == ""))
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful())
+                                proceed();
+                            else
+                                Snackbar.make(v, SIGN_IN_ERROR, Snackbar.LENGTH_LONG).show();
+                        }
+                    });
             }
         });
 
