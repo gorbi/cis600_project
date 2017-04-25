@@ -123,6 +123,8 @@ public class FolderItemFragment extends Fragment {
         }
     }
 
+
+
     private class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
@@ -142,6 +144,12 @@ public class FolderItemFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_folderitem_list, container, false);
 
         ((TextView) view.findViewById(R.id.path)).setText(mCurrentDirectory);
+
+        view.findViewById(R.id.fab_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
 
         // Set the adapter
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
