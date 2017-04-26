@@ -11,6 +11,8 @@ import com.mkchaudh.nnataraj.orangeftp.data.FirebaseHelper;
 
 import java.util.HashMap;
 
+import static com.mkchaudh.nnataraj.orangeftp.MainActivity.RESULT_FAILURE;
+
 public class LoadDataActivity extends AppCompatActivity {
 
     @Override
@@ -22,10 +24,13 @@ public class LoadDataActivity extends AppCompatActivity {
 
         DatabaseReference ftpClientsRef = FirebaseHelper.getFtpClientsRef();
 
+        setResult(RESULT_FAILURE);
+
         if (ftpClientsRef != null) {
             ftpClientsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    setResult(RESULT_OK);
                     if (dataSnapshot.getValue() != null) {
                         FirebaseHelper.updateFTPClients((HashMap<String, HashMap<String, String>>) dataSnapshot.getValue());
                     }

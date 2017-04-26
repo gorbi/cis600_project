@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int REQUEST_UPLOAD_PHOTO = 2;
     private static final int REQUEST_DOWNLOAD_FILE = 3;
+    private static final int REQUEST_LOAD_DATA_FROM_CLOUD = 4;
 
     public static final int RESULT_FAILURE = -143;
 
@@ -52,9 +53,9 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             mCurrentFilePath = savedInstanceState.getString(ARG_CURRENT_FILE_PATH);
         } else {
 
-            startActivity(new Intent(this, LoadDataActivity.class));
+            startActivityForResult(new Intent(this, LoadDataActivity.class), REQUEST_LOAD_DATA_FROM_CLOUD);
 
-            HashMap<String, String> ftpclient = new HashMap<>();
+            /*HashMap<String, String> ftpclient = new HashMap<>();
             ftpclient.put("servernickname", "myserverorangeftp");
             ftpclient.put("hostname", "192.168.1.1");
             ftpclient.put("port", "21");
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             mContent = FolderItemFragment.newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), "/");
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment, mContent)
-                    .commit();
+                    .commitAllowingStateLoss();*/
         }
 
     }
@@ -74,8 +75,11 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (mContent != null)
+        try {
             getSupportFragmentManager().putFragment(outState, ARG_CONTENT, mContent);
+        } catch (Exception ae) {
+
+        }
 
         if (mCurrentDirectory != null)
             outState.putString(ARG_CURRENT_DIRECTORY, mCurrentDirectory);
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment, mContent)
                         .addToBackStack("store")
-                        .commit();
+                        .commitAllowingStateLoss();
             } else {
                 Intent intent = new Intent(this, ViewVideoActivity.class);
                 intent.putExtra(ViewVideoActivity.VIDEO_PATH, mCurrentFilePath);
@@ -173,6 +177,13 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
                 ((FolderItemFragment) mContent).refresh();
             }
         }
+
+        if (requestCode == REQUEST_LOAD_DATA_FROM_CLOUD) {
+            mContent = FolderItemFragment.newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), "/");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, mContent)
+                    .commitAllowingStateLoss();
+        }
     }
 
     @Override
@@ -189,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment, mContent)
                     .addToBackStack("store")
-                    .commit();
+                    .commitAllowingStateLoss();
         }
 
         if (item.getName().endsWith(".jpg") || item.getName().endsWith(".png") || item.getName().endsWith(".mp4")) {
