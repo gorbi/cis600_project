@@ -14,7 +14,7 @@ import java.io.*;
 
 import static com.mkchaudh.nnataraj.orangeftp.MainActivity.RESULT_FAILURE;
 
-public class UploadFileActivity extends AppCompatActivity {
+public class DownloadFileActivity extends AppCompatActivity {
 
     public static final String FTP_SERVER_NICKNAME = "ftpServerNickname";
     public static final String FULL_LOCAL_FILEPATH = "fullLocalFilepath";
@@ -23,7 +23,7 @@ public class UploadFileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_file);
+        setContentView(R.layout.activity_download_file);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -43,7 +43,7 @@ public class UploadFileActivity extends AppCompatActivity {
 
                 final FTPClient ftpClient = FTPConnectionCacher.getFTPConnection(ftpServerNickname);
                 try {
-                    final BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(fullLocalFilepath));
+                    final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(fullLocalFilepath));
 
                     ((TextView) findViewById(R.id.filename)).setText(fullLocalFilepath.substring(fullLocalFilepath.lastIndexOf("/") + 1));
 
@@ -56,8 +56,8 @@ public class UploadFileActivity extends AppCompatActivity {
 
                                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-                                boolean isSuccess = ftpClient.storeFile(fullRemoteFilepath, bufferedInputStream);
-                                bufferedInputStream.close();
+                                boolean isSuccess = ftpClient.retrieveFile(fullRemoteFilepath, bufferedOutputStream);
+                                bufferedOutputStream.close();
 
                                 if (isSuccess)
                                     setResult(Activity.RESULT_OK);
@@ -65,7 +65,7 @@ public class UploadFileActivity extends AppCompatActivity {
                             } catch (IOException ae) {
                                 StringWriter stackTrace = new StringWriter();
                                 ae.printStackTrace(new PrintWriter(stackTrace));
-                                Log.e("UploadFileActivity", stackTrace.toString());
+                                Log.e("DownloadFileActivity", stackTrace.toString());
                                 finish();
                             }
                         }
@@ -74,7 +74,7 @@ public class UploadFileActivity extends AppCompatActivity {
                 } catch (IOException ae) {
                     StringWriter stackTrace = new StringWriter();
                     ae.printStackTrace(new PrintWriter(stackTrace));
-                    Log.e("UploadFileActivity", stackTrace.toString());
+                    Log.e("DownloadFileActivity", stackTrace.toString());
                     finish();
                 }
             }

@@ -5,11 +5,15 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
+
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,6 +82,19 @@ public class ViewImageFragment extends Fragment {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         setPic((ImageView) view.findViewById(R.id.imageView), metrics.widthPixels, metrics.heightPixels);
+
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (new File(mImageFilePath).delete())
+                        Log.d("ViewImageFragment", "Deleted image at " + mImageFilePath);
+                }
+
+                return false;
+            }
+        });
 
         return view;
     }
