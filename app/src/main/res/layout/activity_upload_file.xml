@@ -56,6 +56,8 @@
 
         <TextView
                 android:text="filename"
+                android:maxLines="1"
+                android:ellipsize="start"
                 android:id="@+id/filename"
                 android:textSize="12sp"
                 android:layout_width="wrap_content"
