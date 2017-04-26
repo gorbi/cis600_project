@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, ARG_CONTENT);
         } else {
 
-            startActivity(new Intent(this, LoadDataSplashActivity.class));
+            startActivity(new Intent(this, LoadDataActivity.class));
 
             HashMap<String, String> ftpclient = new HashMap<>();
             ftpclient.put("servernickname", "myserverorangeftp");

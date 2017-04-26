@@ -11,12 +11,12 @@ import com.mkchaudh.nnataraj.orangeftp.data.FirebaseHelper;
 
 import java.util.HashMap;
 
-public class LoadDataSplashActivity extends AppCompatActivity {
+public class LoadDataActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_loaddatasplash);
+        setContentView(R.layout.activity_load_data);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
