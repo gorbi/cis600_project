@@ -156,9 +156,13 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
                         .replace(R.id.fragment, mContent)
                         .addToBackStack("store")
                         .commitAllowingStateLoss();
-            } else {
+            } else if (mCurrentFilePath.endsWith(".mp4")) {
                 Intent intent = new Intent(this, ViewVideoActivity.class);
                 intent.putExtra(ViewVideoActivity.VIDEO_PATH, mCurrentFilePath);
+                startActivity(intent);
+            } else if (mCurrentFilePath.endsWith(".txt")) {
+                Intent intent = new Intent(this, ViewTextActivity.class);
+                intent.putExtra(ViewTextActivity.FILE_PATH, mCurrentFilePath);
                 startActivity(intent);
             }
         }
@@ -203,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
                     .commitAllowingStateLoss();
         }
 
-        if (item.getName().endsWith(".jpg") || item.getName().endsWith(".png") || item.getName().endsWith(".mp4")) {
+        if (item.getName().endsWith(".jpg") || item.getName().endsWith(".png") || item.getName().endsWith(".mp4") || item.getName().endsWith(".txt")) {
 
             File localItem = null;
 
