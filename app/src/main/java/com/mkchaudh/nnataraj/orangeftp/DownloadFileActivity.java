@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
+import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -45,7 +46,7 @@ public class DownloadFileActivity extends AppCompatActivity {
                 try {
                     final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(fullLocalFilepath));
 
-                    ((TextView) findViewById(R.id.filename)).setText(fullLocalFilepath.substring(fullLocalFilepath.lastIndexOf("/") + 1));
+                    ((TextView) findViewById(R.id.filename)).setText(FilenameHelper.get(fullLocalFilepath));
 
                     Runnable runnable = new Runnable() {
                         @Override

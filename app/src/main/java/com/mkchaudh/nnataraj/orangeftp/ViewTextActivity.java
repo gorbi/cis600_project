@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
+import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 
 import java.io.*;
 
@@ -24,7 +25,7 @@ public class ViewTextActivity extends AppCompatActivity {
         if (extras != null) {
             final String filePath = extras.getString(FILE_PATH);
             if (filePath != null) {
-                setTitle(filePath.substring(filePath.lastIndexOf("/") + 1).toString());
+                setTitle(FilenameHelper.get(filePath));
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
 

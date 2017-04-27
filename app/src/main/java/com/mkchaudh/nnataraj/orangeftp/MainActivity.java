@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
+import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 import com.mkchaudh.nnataraj.orangeftp.data.FirebaseHelper;
 import com.squareup.picasso.Picasso;
 import org.apache.commons.net.ftp.FTPFile;
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements
                 FirebaseAuth.getInstance().signOut();
                 FirebaseHelper.reset();
                 FTPConnectionCacher.reset();
+                FilenameHelper.reset();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -195,6 +197,9 @@ public class MainActivity extends AppCompatActivity implements
         );
 
         mCurrentFilePath = file.getAbsolutePath();
+
+        FilenameHelper.put(mCurrentFilePath, filename);
+
         return file;
     }
 

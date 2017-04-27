@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -109,6 +110,8 @@ public class ViewImageActivity extends AppCompatActivity {
         if (extras != null) {
             final String imagePath = extras.getString(IMAGE_PATH);
             if (imagePath != null) {
+                setTitle(FilenameHelper.get(imagePath));
+
                 DisplayMetrics metrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
 

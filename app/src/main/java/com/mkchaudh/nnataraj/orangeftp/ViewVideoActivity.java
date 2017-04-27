@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
+import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 
 import java.io.File;
 
@@ -139,6 +140,7 @@ public class ViewVideoActivity extends AppCompatActivity {
         if (extras != null) {
             final String videoPath = extras.getString(VIDEO_PATH);
             if (videoPath != null) {
+                setTitle(FilenameHelper.get(videoPath));
 
                 MediaController mediaController = new MediaController(ViewVideoActivity.this);
 
