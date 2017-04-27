@@ -18,7 +18,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import com.mkchaudh.nnataraj.orangeftp.data.FirebaseHelper;
+import com.squareup.picasso.Picasso;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.*;
@@ -106,6 +112,27 @@ public class MainActivity extends AppCompatActivity implements
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View navigationHeader = navigationView.getHeaderView(0);
+
+        navigationHeader.findViewById(R.id.signOut).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                FirebaseHelper.reset();
+                FTPConnectionCacher.reset();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        ((TextView) navigationHeader.findViewById(R.id.name)).setText(user.getDisplayName());
+        ((TextView) navigationHeader.findViewById(R.id.email)).setText(user.getEmail());
+
+        Picasso.with(this).load(user.getPhotoUrl()).into((ImageView) navigationHeader.findViewById(R.id.photo));
 
         refreshFTPClientList();
     }

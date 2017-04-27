@@ -26,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int REQUEST_USE_OTHER_ACCOUNT = 1;
 
     private void proceed() {
-        FirebaseHelper.set(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        FirebaseHelper.reset(FirebaseAuth.getInstance().getCurrentUser().getUid());
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

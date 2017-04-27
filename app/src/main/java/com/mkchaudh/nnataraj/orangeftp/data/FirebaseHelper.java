@@ -44,10 +44,16 @@ public class FirebaseHelper {
         return ftpClients.get(servernickname);
     }
 
-    public static void set(String userId) {
+    public static void reset(String userId) {
         ftpClients.clear();
         userRef = FirebaseDatabase.getInstance().getReference(userId);
         ftpClientsRef = userRef.child("ftpclients");
+    }
+
+    public static void reset() {
+        ftpClients.clear();
+        userRef = null;
+        ftpClientsRef = null;
     }
 
     public static DatabaseReference getUserRef() {
