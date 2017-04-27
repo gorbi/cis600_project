@@ -205,11 +205,9 @@ public class MainActivity extends AppCompatActivity implements
         if (requestCode == REQUEST_DOWNLOAD_FILE && resultCode == RESULT_OK) {
             Log.d("MainActivity", "Successfully downloaded the file to " + mCurrentFilePath);
             if (mCurrentFilePath.endsWith(".jpg") || mCurrentFilePath.endsWith(".png")) {
-                mContent = ViewImageFragment.newInstance(mCurrentFilePath);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, mContent)
-                        .addToBackStack("store")
-                        .commitAllowingStateLoss();
+                Intent intent = new Intent(this, ViewImageActivity.class);
+                intent.putExtra(ViewImageActivity.IMAGE_PATH, mCurrentFilePath);
+                startActivity(intent);
             } else if (mCurrentFilePath.endsWith(".mp4")) {
                 Intent intent = new Intent(this, ViewVideoActivity.class);
                 intent.putExtra(ViewVideoActivity.VIDEO_PATH, mCurrentFilePath);
