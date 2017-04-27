@@ -81,11 +81,11 @@ public class FolderItemFragment extends Fragment {
 
         @Override
         protected FTPFile[] doInBackground(FTPClient... ftpClients) {
+            final HashMap<String, String> ftpServerDetails = ftpServerDetailsReference.get();
             try {
                 try {
                     ftpClients[0].changeWorkingDirectory(mCurrentDirectory);
                 } catch (Exception ae) {
-                    final HashMap<String, String> ftpServerDetails = ftpServerDetailsReference.get();
 
                     if (ftpServerDetails == null)
                         return null;
@@ -99,6 +99,15 @@ public class FolderItemFragment extends Fragment {
 
                 return ftpClients[0].listFiles();
             } catch (IOException ae) {
+                if (ftpClients[0].isConnected()) {
+                    try {
+                        ftpClients[0].disconnect();
+                    } catch (IOException f) {
+                        // do nothing
+                    }
+                }
+                if (ftpServerDetails != null)
+                    FTPConnectionCacher.updateFTPConnection(ftpServerDetails.get("servernickname"), new FTPClient());
                 StringWriter stackTrace = new StringWriter();
                 ae.printStackTrace(new PrintWriter(stackTrace));
                 Log.e("FetchFTPFileList", stackTrace.toString());

@@ -25,6 +25,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements
@@ -34,7 +35,10 @@ public class MainActivity extends AppCompatActivity implements
     private Fragment mContent = null;
 
     private static final String ARG_CURRENT_DIRECTORY = "currentDirectory";
-    private String mCurrentDirectory = null;
+    private String mCurrentDirectory = "/";
+
+    private static final String ARG_CURRENT_FTP_SERVER_NICKNAME = "currentFtpServerNickname";
+    private String mCurrentFtpServerNickname = null;
 
     private static final String ARG_CURRENT_FILE_PATH = "currentFilePath";
     private String mCurrentFilePath = null;
@@ -43,23 +47,25 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_UPLOAD_PHOTO = 2;
     private static final int REQUEST_DOWNLOAD_FILE = 3;
     private static final int REQUEST_LOAD_DATA_FROM_CLOUD = 4;
+    private static final int REQUEST_UPDATE_FTPCLIENT = 5;
 
     public static final int RESULT_FAILURE = -143;
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        if (item.getItemId() == R.id.nav_add) {
+            startActivityForResult(new Intent(this, UpdateFTPClientActivity.class), REQUEST_UPDATE_FTPCLIENT);
+        } else {
+            if (mCurrentFtpServerNickname != item.getTitle().toString()) {
+                mCurrentFtpServerNickname = item.getTitle().toString();
 
-        /*if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        }*/
+                mContent = FolderItemFragment.newInstance(FirebaseHelper.getFTPClient(mCurrentFtpServerNickname), mCurrentDirectory);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment, mContent)
+                        .commitAllowingStateLoss();
+            }
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -87,22 +93,9 @@ public class MainActivity extends AppCompatActivity implements
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, ARG_CONTENT);
             mCurrentDirectory = savedInstanceState.getString(ARG_CURRENT_DIRECTORY);
             mCurrentFilePath = savedInstanceState.getString(ARG_CURRENT_FILE_PATH);
+            mCurrentFtpServerNickname = savedInstanceState.getString(ARG_CURRENT_FTP_SERVER_NICKNAME);
         } else {
-
             startActivityForResult(new Intent(this, LoadDataActivity.class), REQUEST_LOAD_DATA_FROM_CLOUD);
-
-            /*HashMap<String, String> ftpclient = new HashMap<>();
-            ftpclient.put("servernickname", "myserverorangeftp");
-            ftpclient.put("hostname", "192.168.1.1");
-            ftpclient.put("port", "21");
-            ftpclient.put("username", "orangeftp");
-            ftpclient.put("password", "cis600android");
-            FirebaseHelper.updateFTPClient("myserverorangeftp", ftpclient);
-
-            mContent = FolderItemFragment.newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), "/");
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, mContent)
-                    .commitAllowingStateLoss();*/
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -114,18 +107,7 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Menu menu = navigationView.getMenu();
-
-        Log.e("NAGA", menu.size()+"");
-
-        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer").setIcon(R.drawable.server);
-        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer");
-        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer");
-        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer").setIcon(R.drawable.server);
-
-        Log.e("NAGA", menu.size()+"");
-
-
+        refreshFTPClientList();
     }
 
     @Override
@@ -138,11 +120,13 @@ public class MainActivity extends AppCompatActivity implements
 
         }
 
-        if (mCurrentDirectory != null)
-            outState.putString(ARG_CURRENT_DIRECTORY, mCurrentDirectory);
+        outState.putString(ARG_CURRENT_DIRECTORY, mCurrentDirectory);
 
         if (mCurrentFilePath != null)
             outState.putString(ARG_CURRENT_FILE_PATH, mCurrentFilePath);
+
+        if (mCurrentFtpServerNickname != null)
+            outState.putString(ARG_CURRENT_FTP_SERVER_NICKNAME, mCurrentFtpServerNickname);
     }
 
     @Override
@@ -203,6 +187,19 @@ public class MainActivity extends AppCompatActivity implements
         return image;
     }
 
+    private void refreshFTPClientList() {
+        Menu menu = ((NavigationView) findViewById(R.id.nav_view)).getMenu();
+
+        HashMap<String, HashMap<String, String>> ftpClients = FirebaseHelper.getFtpClients();
+        Set<String> keys = ftpClients.keySet();
+
+        menu.removeGroup(R.id.ftpclientgroup);
+
+        for (String key : keys) {
+            menu.add(R.id.ftpclientgroup, Menu.NONE, menu.size() + 1, key).setIcon(R.drawable.server);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_DOWNLOAD_FILE && resultCode == RESULT_OK) {
@@ -226,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK && mCurrentFilePath != null) {
             Intent intent = new Intent(this, UploadFileActivity.class);
-            intent.putExtra(UploadFileActivity.FTP_SERVER_NICKNAME, "myserverorangeftp");
+            intent.putExtra(UploadFileActivity.FTP_SERVER_NICKNAME, mCurrentFtpServerNickname);
             intent.putExtra(UploadFileActivity.FULL_LOCAL_FILEPATH, mCurrentFilePath);
             intent.putExtra(UploadFileActivity.FULL_REMOTE_FILEPATH, mCurrentDirectory + "/" + mCurrentFilePath.substring(mCurrentFilePath.lastIndexOf("/") + 1));
 
@@ -239,11 +236,8 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        if (requestCode == REQUEST_LOAD_DATA_FROM_CLOUD) {
-            mContent = FolderItemFragment.newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), "/");
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, mContent)
-                    .commitAllowingStateLoss();
+        if (requestCode == REQUEST_LOAD_DATA_FROM_CLOUD || requestCode == REQUEST_UPDATE_FTPCLIENT) {
+            refreshFTPClientList();
         }
     }
 
@@ -256,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements
             currentDirectory += "/" + item.getName();
 
             mContent = FolderItemFragment
-                    .newInstance(FirebaseHelper.getFTPClient("myserverorangeftp"), currentDirectory);
+                    .newInstance(FirebaseHelper.getFTPClient(mCurrentFtpServerNickname), currentDirectory);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment, mContent)
@@ -280,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements
             if (localItem != null) {
 
                 Intent intent = new Intent(this, DownloadFileActivity.class);
-                intent.putExtra(UploadFileActivity.FTP_SERVER_NICKNAME, "myserverorangeftp");
+                intent.putExtra(UploadFileActivity.FTP_SERVER_NICKNAME, mCurrentFtpServerNickname);
                 intent.putExtra(UploadFileActivity.FULL_LOCAL_FILEPATH, mCurrentFilePath);
                 intent.putExtra(UploadFileActivity.FULL_REMOTE_FILEPATH, currentDirectory + "/" + item.getName());
 

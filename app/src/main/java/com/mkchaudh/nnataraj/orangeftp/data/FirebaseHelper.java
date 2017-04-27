@@ -36,6 +36,10 @@ public class FirebaseHelper {
             ftpClientsRef.getRef().setValue(ftpClients);
     }
 
+    public static HashMap<String, HashMap<String, String>> getFtpClients() {
+        return new HashMap<>(ftpClients);
+    }
+
     public static HashMap<String, String> getFTPClient(String servernickname) {
         return ftpClients.get(servernickname);
     }

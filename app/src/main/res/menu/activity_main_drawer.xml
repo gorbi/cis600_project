@@ -4,6 +4,7 @@
     <item android:id="@+id/nav_add"
           app:showAsAction="always"
           android:icon="@android:drawable/ic_menu_add"
+          android:orderInCategory="1"
           android:title="Add FTP Client"/>
 
     <group android:id="@+id/ftpclientgroup" android:checkableBehavior="single">
