@@ -5,8 +5,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,7 +27,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements FolderItemFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        FolderItemFragment.OnListFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String ARG_CONTENT = "content";
     private Fragment mContent = null;
@@ -39,6 +45,36 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
     private static final int REQUEST_LOAD_DATA_FROM_CLOUD = 4;
 
     public static final int RESULT_FAILURE = -143;
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        /*if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        }*/
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +104,27 @@ public class MainActivity extends AppCompatActivity implements FolderItemFragmen
                     .replace(R.id.fragment, mContent)
                     .commitAllowingStateLoss();*/
         }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        Menu menu = navigationView.getMenu();
+
+        Log.e("NAGA", menu.size()+"");
+
+        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer").setIcon(R.drawable.server);
+        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer");
+        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer");
+        menu.add(R.id.ftpclientgroup, Menu.NONE, Menu.NONE, "orangeFTPServer").setIcon(R.drawable.server);
+
+        Log.e("NAGA", menu.size()+"");
+
 
     }
 
