@@ -240,6 +240,10 @@ public class MainActivity extends AppCompatActivity implements
                 Intent intent = new Intent(this, ViewImageActivity.class);
                 intent.putExtra(ViewImageActivity.IMAGE_PATH, mCurrentFilePath);
                 startActivity(intent);
+                /*Intent intent = new Intent(this, ImageGalleryActivity.class);
+                String []images = {mCurrentFilePath};
+                intent.putExtra(ImageGalleryActivity.ARRAY_IMAGE_PATHS, images);
+                startActivity(intent);*/
             } else if (mCurrentFilePath.endsWith(".mp4")) {
                 Intent intent = new Intent(this, ViewVideoActivity.class);
                 intent.putExtra(ViewVideoActivity.VIDEO_PATH, mCurrentFilePath);

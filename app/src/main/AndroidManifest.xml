@@ -81,6 +81,11 @@
                 android:label="@string/app_name"
                 android:theme="@style/FullscreenTheme">
         </activity>
+        <activity
+                android:name=".ImageGalleryActivity"
+                android:label="Image Gallery"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
