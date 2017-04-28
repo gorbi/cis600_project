@@ -13,8 +13,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -119,7 +119,7 @@ public class ViewImageActivity extends AppCompatActivity {
 
                 ImageView imageView = (ImageView) findViewById(R.id.imageView);
 
-                Picasso.with(this).load(imageUri).fit().into(imageView);
+                Glide.with(this).load(imageUri).into(imageView);
 
                 imageView.setOnKeyListener(new View.OnKeyListener() {
                     @Override

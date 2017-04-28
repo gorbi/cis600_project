@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 import com.squareup.picasso.Picasso;
@@ -238,7 +239,7 @@ public class ImageGalleryActivity extends AppCompatActivity {
 
             ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
 
-            Picasso.with(getActivity()).load(imageUri).fit().into(imageView);
+            Glide.with(getActivity()).load(imageUri).into(imageView);
 
             return rootView;
         }
