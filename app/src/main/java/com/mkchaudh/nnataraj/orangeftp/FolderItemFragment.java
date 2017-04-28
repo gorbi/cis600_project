@@ -101,6 +101,10 @@ public class FolderItemFragment extends Fragment {
         @Override
         protected void onPostExecute(FTPFile[] ftpFiles) {
             if (ftpFiles != null) {
+                items.clear();
+                Collections.addAll(items, ftpFiles);
+                folderItemRecyclerViewAdapter.notifyDataSetChanged();
+
                 boolean isGallery = true;
 
                 String[] filename = new String[ftpFiles.length];
@@ -115,10 +119,6 @@ public class FolderItemFragment extends Fragment {
 
                 if (isGallery) {
                     mListener.triggerImageGallery(filename);
-                } else {
-                    items.clear();
-                    Collections.addAll(items, ftpFiles);
-                    folderItemRecyclerViewAdapter.notifyDataSetChanged();
                 }
             }
         }

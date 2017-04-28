@@ -349,8 +349,9 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void triggerImageGallery(String[] filename) {
-        for (String file : filename) {
-            Log.e("NAGA", file);
-        }
+        Intent intent = new Intent(this, ImageGalleryActivity.class);
+        intent.putExtra(ImageGalleryActivity.FTP_SERVER_NICKNAME, mCurrentFtpServerNickname);
+        intent.putExtra(ImageGalleryActivity.ARRAY_IMAGE_PATHS, filename);
+        startActivity(intent);
     }
 }

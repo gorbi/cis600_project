@@ -1,6 +1,9 @@
 package com.mkchaudh.nnataraj.orangeftp;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,14 +21,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
+import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 import com.squareup.picasso.Picasso;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 
-import java.io.File;
+import java.io.*;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.UUID;
 
 public class ImageGalleryActivity extends AppCompatActivity {
 
     public static final String ARRAY_IMAGE_PATHS = "arrayImagePaths";
+    public static final String FTP_SERVER_NICKNAME = "ftpServerNickname";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -36,31 +48,131 @@ public class ImageGalleryActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
+    private String ftpServerNickname = null;
+    private ArrayList<String> imagePaths = null;
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
 
+    private String createFile(String filename) throws IOException {
+
+        String suffix;
+        try {
+            suffix = "." + filename.split("\\.")[1];
+        } catch (ArrayIndexOutOfBoundsException ae) {
+            suffix = "";
+        }
+
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File file = File.createTempFile(
+                UUID.randomUUID().toString(),  /* prefix */
+                suffix,         /* suffix */
+                storageDir      /* directory */
+        );
+
+        FilenameHelper.put(file.getAbsolutePath(), filename);
+
+        return file.getAbsolutePath();
+    }
+
+    public void setDownloadProgress(int value) {
+        progressDialog.setProgress(value);
+    }
+
+    class DownloadFiles extends AsyncTask<String, Integer, Void> {
+
+        final WeakReference<ProgressDialog> progressDialogWeakReference;
+
+        DownloadFiles(final ProgressDialog progressDialog) {
+            progressDialogWeakReference = new WeakReference<>(progressDialog);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            setDownloadProgress(values[0]);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            imagePaths.clear();
+            for (int i = 0; i < strings.length; i++) {
+                BufferedOutputStream bufferedOutputStream = null;
+                try {
+                    String localpath = createFile(new File(strings[i]).getName());
+                    bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(localpath));
+
+                    FTPClient ftpClient = FTPConnectionCacher.getFTPConnection(ftpServerNickname);
+                    FTPConnectionCacher.refreshFTPConnection(ftpServerNickname, ftpClient);
+
+                    ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+                    ftpClient.retrieveFile(strings[i], bufferedOutputStream);
+                    bufferedOutputStream.close();
+
+                    imagePaths.add(localpath);
+                } catch (Exception ae) {
+                    StringWriter stackTrace = new StringWriter();
+                    ae.printStackTrace(new PrintWriter(stackTrace));
+                    Log.e("DownloadFiles", stackTrace.toString());
+                } finally {
+                    try {
+                        bufferedOutputStream.close();
+                    } catch (Exception ae) {
+
+                    }
+
+                }
+                publishProgress(i + 1);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            final ProgressDialog progressDialog = progressDialogWeakReference.get();
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+                display();
+            }
+        }
+    }
+
+    private void display() {
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+    }
+
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_gallery);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
-            final String[] imagePath = extras.getStringArray(ARRAY_IMAGE_PATHS);
-            if (imagePath != null && imagePath.length > 0) {
+            imagePaths = new ArrayList<>();
+            Collections.addAll(imagePaths,extras.getStringArray(ARRAY_IMAGE_PATHS));
+            ftpServerNickname = extras.getString(FTP_SERVER_NICKNAME);
+            if (imagePaths != null && imagePaths.size() > 0 && ftpServerNickname != null) {
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Downloading...");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+                progressDialog.setMax(imagePaths.size());
 
-                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-                setSupportActionBar(toolbar);
-                // Create the adapter that will return a fragment for each of the three
-                // primary sections of the activity.
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), imagePath);
-
-                // Set up the ViewPager with the sections adapter.
-                mViewPager = (ViewPager) findViewById(R.id.container);
-                mViewPager.setAdapter(mSectionsPagerAdapter);
+                new DownloadFiles(progressDialog).execute(imagePaths.toArray(new String[imagePaths.size()]));
             } else {
                 finish();
             }
@@ -138,28 +250,25 @@ public class ImageGalleryActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        final String[] imagePath;
-
-        public SectionsPagerAdapter(FragmentManager fm, String[] imagePath) {
+        public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.imagePath = imagePath;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(imagePath[0]);
+            return PlaceholderFragment.newInstance(imagePaths.get(position));
         }
 
         @Override
         public int getCount() {
-            return imagePath.length;
+            return imagePaths.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return FilenameHelper.get(imagePath[position]);
+            return FilenameHelper.get(imagePaths.get(position));
         }
     }
 }
