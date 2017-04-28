@@ -12,8 +12,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 
 import java.io.File;
@@ -103,7 +103,7 @@ public class ViewImageActivity extends AppCompatActivity {
 
         mVisible = true;
         //mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.imageView);
+        mContentView = findViewById(R.id.photoView);
 
         Bundle extras = getIntent().getExtras();
 
@@ -117,11 +117,11 @@ public class ViewImageActivity extends AppCompatActivity {
 
                 Uri imageUri = FileProvider.getUriForFile(this, "com.mkchaudh.nnataraj.orangeftp", new File(imagePath));
 
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                PhotoView photoView = (PhotoView) mContentView;
 
-                Glide.with(this).load(imageUri).into(imageView);
+                Glide.with(this).load(imageUri).into(photoView);
 
-                imageView.setOnKeyListener(new View.OnKeyListener() {
+                photoView.setOnKeyListener(new View.OnKeyListener() {
                     @Override
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
 

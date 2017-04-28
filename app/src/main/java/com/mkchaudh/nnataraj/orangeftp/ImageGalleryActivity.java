@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -20,8 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 import org.apache.commons.net.ftp.FTP;
@@ -147,6 +149,10 @@ public class ImageGalleryActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pagerTabStrip);
+        pagerTabStrip.setDrawFullUnderline(true);
+        pagerTabStrip.setTabIndicatorColor(ContextCompat.getColor(this, R.color.colorPrimary));
     }
 
     ProgressDialog progressDialog;
@@ -236,9 +242,9 @@ public class ImageGalleryActivity extends AppCompatActivity {
 
             Uri imageUri = FileProvider.getUriForFile(getActivity(), "com.mkchaudh.nnataraj.orangeftp", new File(getArguments().getString(ARG_IMAGE_PATH)));
 
-            ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
+            PhotoView photoView = (PhotoView) rootView.findViewById(R.id.photoView);
 
-            Glide.with(getActivity()).load(imageUri).into(imageView);
+            Glide.with(getActivity()).load(imageUri).into(photoView);
 
             return rootView;
         }
