@@ -106,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                                 .createSignInIntentBuilder()
                                 .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
                                         new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                                .setTheme(R.style.AppTheme)
                                 .build(),
                         REQUEST_USE_OTHER_ACCOUNT);
             }
