@@ -346,4 +346,11 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
     }
+
+    @Override
+    public void triggerImageGallery(String[] filename) {
+        for (String file : filename) {
+            Log.e("NAGA", file);
+        }
+    }
 }
