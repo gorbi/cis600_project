@@ -8,3 +8,5 @@
 .externalNativeBuild
 /app/google-services.json
 /app/src/main/res/values/login.xml
+ic_launcher.png
+/app/src/main/ic_launcher-web.png

@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
-import com.squareup.picasso.Picasso;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
