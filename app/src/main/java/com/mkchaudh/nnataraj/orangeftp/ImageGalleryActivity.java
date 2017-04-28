@@ -16,11 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -150,6 +146,21 @@ public class ImageGalleryActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        mViewPager.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    for (String imagePath : imagePaths)
+                        if (new File(imagePath).delete())
+                            Log.d("ImageGalleryActivity", "Deleted image at " + imagePath);
+                    FilenameHelper.reset();
+                }
+
+                return false;
+            }
+        });
+
         PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pagerTabStrip);
         pagerTabStrip.setDrawFullUnderline(true);
         pagerTabStrip.setTabIndicatorColor(ContextCompat.getColor(this, R.color.colorPrimary));
@@ -168,7 +179,7 @@ public class ImageGalleryActivity extends AppCompatActivity {
 
         if (extras != null) {
             imagePaths = new ArrayList<>();
-            Collections.addAll(imagePaths,extras.getStringArray(ARRAY_IMAGE_PATHS));
+            Collections.addAll(imagePaths, extras.getStringArray(ARRAY_IMAGE_PATHS));
             ftpServerNickname = extras.getString(FTP_SERVER_NICKNAME);
             if (imagePaths != null && imagePaths.size() > 0 && ftpServerNickname != null) {
                 progressDialog = new ProgressDialog(this);

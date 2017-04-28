@@ -127,7 +127,8 @@ public class ViewImageActivity extends AppCompatActivity {
 
                         if (keyCode == KeyEvent.KEYCODE_BACK) {
                             if (new File(imagePath).delete())
-                                Log.d("ViewImageFragment", "Deleted image at " + imagePath);
+                                Log.d("ViewImageActivity", "Deleted image at " + imagePath);
+                            FilenameHelper.reset();
                         }
 
                         return false;

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.TextView;
 import com.mkchaudh.nnataraj.orangeftp.data.FilenameHelper;
 
@@ -36,7 +38,23 @@ public class ViewTextActivity extends AppCompatActivity {
                     }
                     bufferedReader.close();
 
-                    ((TextView) findViewById(R.id.content)).setText(fileContent.toString());
+                    TextView content = (TextView) findViewById(R.id.content);
+
+                    content.setText(fileContent.toString());
+
+                    content.setOnKeyListener(new View.OnKeyListener() {
+                        @Override
+                        public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                if (new File(filePath).delete())
+                                    Log.d("ViewTextActivity", "Deleted text file at " + filePath);
+                                FilenameHelper.reset();
+                            }
+
+                            return false;
+                        }
+                    });
 
                 } catch (IOException ae) {
                     StringWriter stackTrace = new StringWriter();

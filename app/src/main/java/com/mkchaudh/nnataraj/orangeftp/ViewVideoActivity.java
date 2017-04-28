@@ -9,6 +9,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.MediaController;
@@ -165,6 +167,20 @@ public class ViewVideoActivity extends AppCompatActivity {
                         } else {
                             mContentView.pause();
                         }
+                    }
+                });
+
+                mContentView.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            if (new File(videoPath).delete())
+                                Log.d("ViewVideoActivity", "Deleted video at " + videoPath);
+                            FilenameHelper.reset();
+                        }
+
+                        return false;
                     }
                 });
             }
