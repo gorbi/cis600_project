@@ -1,6 +1,7 @@
 package com.mkchaudh.nnataraj.orangeftp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,9 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
 import com.mkchaudh.nnataraj.orangeftp.data.FTPConnectionCacher;
 import org.apache.commons.net.ftp.FTPClient;
@@ -114,7 +113,7 @@ public class FolderItemFragment extends Fragment {
                         isGallery = false;
                         break;
                     }
-                    filename[i] = mCurrentDirectory+"/"+ftpFiles[i].getName();
+                    filename[i] = mCurrentDirectory + "/" + ftpFiles[i].getName();
                 }
 
                 if (isGallery) {
@@ -139,8 +138,32 @@ public class FolderItemFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_folderitem, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_displayfolderdetails:
+                return true;
+            case R.id.action_update_ftp_client:
+                Intent intent = new Intent(getActivity(), UpdateFTPClientActivity.class);
+                intent.putExtra(UpdateFTPClientActivity.FTP_SERVER_NICKNAME, mFtpServerDetails.get("servernickname"));
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         View view = inflater.inflate(R.layout.fragment_folderitem_list, container, false);
 
         ((TextView) view.findViewById(R.id.path)).setText(mCurrentDirectory);
