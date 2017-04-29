@@ -146,6 +146,7 @@ public class FolderItemFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_displayfolderdetails:
+                mListener.getFolderInfo(mCurrentDirectory, mFtpServerDetails.get("servernickname"));
                 return true;
             case R.id.action_update_ftp_client:
                 Intent intent = new Intent(getActivity(), UpdateFTPClientActivity.class);
@@ -227,5 +228,7 @@ public class FolderItemFragment extends Fragment {
         void onCameraFABClick(View view, String currentDirectory);
 
         void triggerImageGallery(String[] filename);
+
+        void getFolderInfo(String folderPath, String ftpServerNickname);
     }
 }

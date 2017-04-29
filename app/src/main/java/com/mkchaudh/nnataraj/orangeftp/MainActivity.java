@@ -332,4 +332,15 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra(ImageGalleryActivity.ARRAY_IMAGE_PATHS, filename);
         startActivity(intent);
     }
+
+    @Override
+    public void getFolderInfo(String folderPath, String ftpServerNickname) {
+        mContent = ViewFolderDetailsFragment
+                .newInstance(folderPath, ftpServerNickname);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment, mContent)
+                .addToBackStack("store")
+                .commitAllowingStateLoss();
+    }
 }
