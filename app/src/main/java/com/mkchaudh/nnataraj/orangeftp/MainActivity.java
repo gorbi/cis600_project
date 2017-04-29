@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_DOWNLOAD_FILE && resultCode == RESULT_OK) {
             Log.d("MainActivity", "Successfully downloaded the file to " + mCurrentFilePath);
-            if (mCurrentFilePath.endsWith(".jpg") || mCurrentFilePath.endsWith(".png")) {
+            if (mCurrentFilePath.toLowerCase().endsWith(".jpg") || mCurrentFilePath.toLowerCase().endsWith(".png")) {
                 Intent intent = new Intent(this, ViewImageActivity.class);
                 intent.putExtra(ViewImageActivity.IMAGE_PATH, mCurrentFilePath);
                 startActivity(intent);
@@ -222,14 +222,26 @@ public class MainActivity extends AppCompatActivity implements
                 String []images = {mCurrentFilePath};
                 intent.putExtra(ImageGalleryActivity.ARRAY_IMAGE_PATHS, images);
                 startActivity(intent);*/
-            } else if (mCurrentFilePath.endsWith(".mp4")) {
+            } else if (mCurrentFilePath.toLowerCase().endsWith(".mp4")) {
                 Intent intent = new Intent(this, ViewVideoActivity.class);
                 intent.putExtra(ViewVideoActivity.VIDEO_PATH, mCurrentFilePath);
                 startActivity(intent);
-            } else if (mCurrentFilePath.endsWith(".txt")) {
+            } else if (mCurrentFilePath.toLowerCase().endsWith(".txt") || mCurrentFilePath.toLowerCase().endsWith(".log") || mCurrentFilePath.toLowerCase().endsWith(".java")) {
                 Intent intent = new Intent(this, ViewTextActivity.class);
                 intent.putExtra(ViewTextActivity.FILE_PATH, mCurrentFilePath);
                 startActivity(intent);
+            } else if (mCurrentFilePath.toLowerCase().endsWith(".pdf")) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Uri fileUri = Uri.fromFile(new File(mCurrentFilePath));
+                    intent.setDataAndType(fileUri, "application/pdf");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception ae) {
+                    StringWriter stackTrace = new StringWriter();
+                    ae.printStackTrace(new PrintWriter(stackTrace));
+                    Log.e("MainActivity", stackTrace.toString());
+                }
             }
         }
 
@@ -270,7 +282,10 @@ public class MainActivity extends AppCompatActivity implements
                     .commitAllowingStateLoss();
         }
 
-        if (item.getName().endsWith(".jpg") || item.getName().endsWith(".png") || item.getName().endsWith(".mp4") || item.getName().endsWith(".txt")) {
+        if (item.getName().toLowerCase().endsWith(".jpg") || item.getName().toLowerCase().endsWith(".png")
+                || item.getName().toLowerCase().endsWith(".mp4") || item.getName().toLowerCase().endsWith(".txt")
+                || item.getName().toLowerCase().endsWith(".log") || item.getName().toLowerCase().endsWith(".java")
+                || item.getName().toLowerCase().endsWith(".pdf")) {
 
             File localItem = null;
 
