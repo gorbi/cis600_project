@@ -145,6 +145,9 @@ public class FolderItemFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_store_location_here:
+                mListener.storeLocationHere(mCurrentDirectory, mFtpServerDetails.get("servernickname"));
+                return true;
             case R.id.action_displayfolderdetails:
                 mListener.getFolderInfo(mCurrentDirectory, mFtpServerDetails.get("servernickname"));
                 return true;
@@ -230,5 +233,7 @@ public class FolderItemFragment extends Fragment {
         void triggerImageGallery(String[] filename);
 
         void getFolderInfo(String folderPath, String ftpServerNickname);
+
+        void storeLocationHere(String folderPath, String ftpServerNickname);
     }
 }

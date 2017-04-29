@@ -12,6 +12,7 @@
     <uses-permission
             android:name="android.permission.WRITE_EXTERNAL_STORAGE"
             android:maxSdkVersion="18"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
             android:allowBackup="true"
@@ -86,6 +87,12 @@
                 android:label="Image Gallery"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <service
+                android:name=".StoreLocationService"
+                android:enabled="true"
+                android:exported="true">
+        </service>
     </application>
 
 </manifest>

@@ -358,4 +358,12 @@ public class MainActivity extends AppCompatActivity implements
                 .addToBackStack("store")
                 .commitAllowingStateLoss();
     }
+
+    @Override
+    public void storeLocationHere(String folderPath, String ftpServerNickname) {
+        Intent intent = new Intent(this, StoreLocationService.class);
+        intent.putExtra(StoreLocationService.FTP_CURRENT_LOCATION,mCurrentDirectory);
+        intent.putExtra(StoreLocationService.FTP_SERVER_NICKNAME, ftpServerNickname);
+        startService(intent);
+    }
 }
